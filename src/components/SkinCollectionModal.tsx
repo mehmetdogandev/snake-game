@@ -5,6 +5,7 @@ import { SaveData, SkinId } from '../game/types';
 import { purchaseSkin, equipSkin } from '../game/economy';
 import { HeroSnakePreview } from './HeroSnakePreview';
 import { audio } from '../game/audio';
+import { getTranslations, LOCALIZED_SKINS } from '../game/i18n';
 
 interface SkinCollectionModalProps {
   saveData: SaveData;
@@ -20,7 +21,14 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
   const [selectedPreviewSkin, setSelectedPreviewSkin] = useState<SkinId>(saveData.selectedSkin);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const lang = saveData.settings.language || 'tr';
+  const t = getTranslations(lang);
+
   const activeSkinDef = SKINS[selectedPreviewSkin] || SKINS.emerald;
+  const localizedActiveSkin = LOCALIZED_SKINS[lang][selectedPreviewSkin] || {
+    name: activeSkinDef.name,
+    description: activeSkinDef.description,
+  };
   const isUnlocked = saveData.unlockedSkins.includes(selectedPreviewSkin);
   const isEquipped = saveData.selectedSkin === selectedPreviewSkin;
 
@@ -41,8 +49,27 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
       onUpdateSave(result.save);
       audio.playFanfare();
     } else {
-      setErrorMessage(result.error || 'Cannot unlock skin');
+      const errMsg =
+        lang === 'tr'
+          ? result.error === 'Insufficient coins'
+            ? 'Yetersiz altın! Daha fazla altın kazanmak için oynayın.'
+            : 'Kostüm kilidi açılamadı.'
+          : result.error || 'Cannot unlock skin';
+      setErrorMessage(errMsg);
       audio.playCrash();
+    }
+  };
+
+  const getRarityLabel = (rarity: string) => {
+    switch (rarity) {
+      case 'legendary':
+        return t.rarityLegendary;
+      case 'epic':
+        return t.rarityEpic;
+      case 'rare':
+        return t.rarityRare;
+      default:
+        return t.rarityCommon;
     }
   };
 
@@ -60,21 +87,21 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md">
-      <div className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-slate-950/80 backdrop-blur-md">
+      <div className="relative w-full max-w-2xl max-h-[94dvh] flex flex-col bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/80 bg-slate-900/60">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-800/80 bg-slate-900/60">
           <div>
-            <h2 className="text-xl font-bold font-display text-white tracking-tight flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-emerald-400" />
-              Serpent Wardrobe
+            <h2 className="text-lg sm:text-xl font-bold font-display text-white tracking-tight flex items-center gap-2">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+              {t.wardrobeTitle}
             </h2>
-            <p className="text-xs text-slate-400">12 original skins with dynamic aura styles</p>
+            <p className="text-[11px] sm:text-xs text-slate-400">{t.wardrobeSubtitle}</p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-400 font-mono-numbers text-sm font-semibold">
-              <Coins className="w-4 h-4 text-amber-400" />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-400 font-mono-numbers text-xs sm:text-sm font-semibold">
+              <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
               <span>{saveData.coins.toLocaleString()}</span>
             </div>
 
@@ -84,7 +111,7 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
                 onClose();
               }}
               className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-              aria-label="Close"
+              aria-label={t.close}
             >
               <X className="w-5 h-5" />
             </button>
@@ -92,26 +119,26 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
         </div>
 
         {/* Featured Preview Banner */}
-        <div className="px-5 py-4 bg-gradient-to-b from-slate-800/40 to-slate-900/80 border-b border-slate-800/60 flex flex-col sm:flex-row items-center gap-4">
-          <div className="w-full sm:w-56 flex items-center justify-center bg-slate-950/60 rounded-xl p-2 border border-slate-800/50">
-            <HeroSnakePreview skinId={selectedPreviewSkin} width={220} height={90} />
+        <div className="px-4 sm:px-5 py-2.5 sm:py-4 landscape:py-2 bg-gradient-to-b from-slate-800/40 to-slate-900/80 border-b border-slate-800/60 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+          <div className="w-full sm:w-52 flex items-center justify-center bg-slate-950/60 rounded-xl p-1.5 border border-slate-800/50">
+            <HeroSnakePreview skinId={selectedPreviewSkin} width={200} height={75} />
           </div>
 
           <div className="flex-1 w-full flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2.5 mb-1">
                 <h3 className="text-lg font-bold text-white font-display">
-                  {activeSkinDef.name}
+                  {localizedActiveSkin.name}
                 </h3>
                 <span
                   className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${getRarityBadge(
                     activeSkinDef.rarity
                   )}`}
                 >
-                  {activeSkinDef.rarity}
+                  {getRarityLabel(activeSkinDef.rarity)}
                 </span>
               </div>
-              <p className="text-xs text-slate-300 mb-3">{activeSkinDef.description}</p>
+              <p className="text-xs text-slate-300 mb-3">{localizedActiveSkin.description}</p>
             </div>
 
             {errorMessage && (
@@ -122,7 +149,7 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
               {isEquipped ? (
                 <div className="flex items-center gap-1.5 px-4 py-2 bg-emerald-500/20 border border-emerald-500/50 rounded-xl text-emerald-400 text-xs font-bold shadow-sm glow-emerald">
                   <Check className="w-4 h-4" />
-                  Currently Equipped
+                  {t.equipped}
                 </div>
               ) : isUnlocked ? (
                 <button
@@ -131,7 +158,7 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
                   className="px-5 py-2.5 bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 active:scale-95 text-slate-950 font-black rounded-xl text-xs transition-all shadow-lg flex items-center gap-1.5 glow-emerald cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
-                  EQUIP SKIN
+                  {t.equip.toUpperCase()}
                 </button>
               ) : (
                 <button
@@ -140,7 +167,9 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
                   className="px-5 py-2.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 hover:from-amber-300 hover:to-yellow-200 active:scale-95 text-slate-950 font-black rounded-xl text-xs transition-all shadow-lg flex items-center gap-1.5 glow-gold cursor-pointer"
                 >
                   <Coins className="w-4 h-4" />
-                  UNLOCK FOR {activeSkinDef.cost.toLocaleString()} COINS
+                  {lang === 'tr'
+                    ? `${activeSkinDef.cost.toLocaleString()} ALTIN İLE AÇ`
+                    : `UNLOCK FOR ${activeSkinDef.cost.toLocaleString()} COINS`}
                 </button>
               )}
             </div>
@@ -154,6 +183,7 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
               const unlocked = saveData.unlockedSkins.includes(skin.id);
               const equipped = saveData.selectedSkin === skin.id;
               const isSelected = selectedPreviewSkin === skin.id;
+              const loc = LOCALIZED_SKINS[lang][skin.id] || { name: skin.name };
 
               return (
                 <button
@@ -173,7 +203,7 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
                   {/* Equipped pill */}
                   {equipped && (
                     <span className="absolute top-2 right-2 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/70 border border-emerald-500/30 px-1.5 py-0.5 rounded">
-                      Equipped
+                      {t.equipped}
                     </span>
                   )}
 
@@ -198,7 +228,7 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
 
                   <div>
                     <h4 className="text-xs font-bold text-white leading-tight truncate">
-                      {skin.name}
+                      {loc.name}
                     </h4>
                     <span
                       className={`text-[9px] uppercase font-bold tracking-wider mt-0.5 inline-block ${
@@ -211,14 +241,14 @@ export const SkinCollectionModal: React.FC<SkinCollectionModalProps> = ({
                           : 'text-emerald-400'
                       }`}
                     >
-                      {skin.rarity}
+                      {getRarityLabel(skin.rarity)}
                     </span>
                   </div>
 
                   {/* Cost or Status */}
                   <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono-numbers">
                     {unlocked ? (
-                      <span className="text-emerald-400 font-semibold">Unlocked</span>
+                      <span className="text-emerald-400 font-semibold">{t.unlock}</span>
                     ) : (
                       <span className="text-amber-400 font-semibold flex items-center gap-1">
                         <Coins className="w-3 h-3" />

@@ -41,6 +41,7 @@ export const DEFAULT_SAVE_DATA: SaveData = {
     reducedMotion: false,
     highContrast: false,
     controls: 'both',
+    language: 'tr',
   },
   lastSavedAt: Date.now(),
 };
@@ -92,6 +93,7 @@ export function loadSaveData(): SaveData {
       settings: {
         ...DEFAULT_SAVE_DATA.settings,
         ...(migrated.settings || {}),
+        language: (migrated.settings?.language === 'en' ? 'en' : 'tr'),
       },
       achievements: {
         ...(migrated.achievements || {}),

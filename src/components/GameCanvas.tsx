@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Pause, Clock, Flame, Shield, Zap } from 'lucide-react';
 import { GameState, SaveData, Direction, ChallengeStage } from '../game/types';
 import { createInitialState, queueDirection, tick } from '../game/engine';
 import { GameRenderer } from '../game/renderer';
@@ -6,6 +7,7 @@ import { InputManager } from '../game/input';
 import { GameplayHud } from './GameplayHud';
 import { VirtualDpad } from './VirtualDpad';
 import { audio } from '../game/audio';
+import { getTranslations } from '../game/i18n';
 
 interface GameCanvasProps {
   mode: GameState['mode'];
@@ -29,6 +31,37 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<GameRenderer | null>(null);
+
+  // Responsive orientation & viewport dimensions state
+  const [dimensions, setDimensions] = useState(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 390,
+    height: typeof window !== 'undefined' ? window.innerHeight : 844,
+  }));
+
+  const isLandscape = dimensions.width > dimensions.height;
+  const isTablet = (dimensions.width >= 768 && dimensions.height >= 768) || (isLandscape && dimensions.width >= 900 && dimensions.height >= 600);
+  const isMobileLandscape = isLandscape && dimensions.height < 600;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    if (window.screen?.orientation) {
+      window.screen.orientation.addEventListener('change', handleResize);
+    }
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+      if (window.screen?.orientation) {
+        window.screen.orientation.removeEventListener('change', handleResize);
+      }
+    };
+  }, []);
 
   // Store game state in ref so fixed simulation loop runs smoothly without React state churn
   const highScore =
@@ -184,13 +217,14 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       animationFrameId = requestAnimationFrame(gameLoop);
     };
 
-    // Resize observer to keep canvas sharp across all screen sizes
+    // Resize observer to keep canvas sharp across all screen sizes (phones, tablets, desktop)
     const resizeObserver = new ResizeObserver(() => {
       if (!canvas || !container) return;
-      const availableW = container.clientWidth - 12;
-      const availableH = container.clientHeight - 12;
-      // Cap at 520px for optimal desktop focal density while adapting down to 240px on small mobile
-      const size = Math.max(160, Math.min(520, Math.min(availableW, availableH)));
+      const availableW = container.clientWidth - 10;
+      const availableH = container.clientHeight - 10;
+      // Cap at 620px for tablet / desktop so playfield is comfortably sized
+      const maxCap = dimensions.width >= 768 && dimensions.height >= 768 ? 640 : 540;
+      const size = Math.max(160, Math.min(maxCap, Math.min(availableW, availableH)));
       canvas.style.width = `${size}px`;
       canvas.style.height = `${size}px`;
       rendererRef.current?.resize(canvas, size, size);
@@ -205,19 +239,131 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       unbindTouch();
       resizeObserver.disconnect();
     };
-  }, [handleDirection, handleTogglePause, onGameOver, onVictory, saveData.selectedSkin, saveData.settings.reducedMotion]);
+  }, [handleDirection, handleTogglePause, onGameOver, onVictory, saveData.selectedSkin, saveData.settings.reducedMotion, dimensions]);
 
   const showDpad = saveData.settings.controls === 'dpad' || saveData.settings.controls === 'both';
+  const is2x = hudState.activePowerUps.some((p) => p.type === 'BONUS_2X');
+  const isSlow = hudState.activePowerUps.some((p) => p.type === 'SLOW');
 
+  const lang = saveData.settings.language || 'tr';
+  const t = getTranslations(lang);
+
+  // RENDER: Landscape Mode (Horizontal Handheld Console Cockpit Layout for Phones & Tablets)
+  if (isLandscape) {
+    const modeBadge =
+      hudState.mode === 'CHALLENGE' && hudState.challengeStageId
+        ? lang === 'tr'
+          ? `Bölüm ${hudState.challengeStageId}`
+          : `Stage ${hudState.challengeStageId}`
+        : hudState.mode === 'CLASSIC'
+        ? t.modeClassic
+        : hudState.mode === 'ZEN'
+        ? t.modeZen
+        : t.modeChallenge;
+
+    return (
+      <div className="relative w-full h-[100dvh] flex flex-row items-center justify-between bg-[#060913] overflow-hidden select-none px-[max(0.5rem,env(safe-area-inset-left,0px))] py-[max(0.25rem,env(safe-area-inset-top,0px))]">
+        {/* Left Column HUD */}
+        <div className={`h-full ${isTablet ? 'w-52 p-3' : 'w-40 py-1.5 px-2'} flex flex-col justify-between select-none shrink-0 border-r border-slate-800/80 bg-slate-950/70 rounded-2xl my-1 shadow-xl backdrop-blur-sm`}>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-extrabold uppercase text-[10px] sm:text-xs px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
+                {modeBadge}
+              </span>
+              <button
+                type="button"
+                onClick={() => onPause(gameStateRef.current)}
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 cursor-pointer shadow-sm transition-transform"
+                aria-label={t.pause}
+              >
+                <Pause className="w-3.5 h-3.5 fill-current" />
+              </button>
+            </div>
+
+            {hudState.timeRemaining !== undefined && (
+              <div className="flex items-center gap-1.5 font-mono-numbers text-cyan-400 font-bold text-xs bg-cyan-950/60 px-2 py-1 rounded-lg border border-cyan-800/40">
+                <Clock className="w-3.5 h-3.5" />
+                <span>{Math.ceil(hudState.timeRemaining)}s</span>
+              </div>
+            )}
+
+            <div>
+              <div className="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold">{t.score}</div>
+              <div className={`${isTablet ? 'text-3xl' : 'text-2xl'} font-black font-mono-numbers text-white text-glow-emerald leading-tight`}>
+                {hudState.score}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] font-mono-numbers text-slate-300">
+              <span>{lang === 'tr' ? 'BOY' : 'LEN'}: <strong className="text-emerald-400">{hudState.snake.length}</strong></span>
+              <span>{t.best.toUpperCase()}: {hudState.highScore}</span>
+            </div>
+
+            {hudState.comboCount > 1 && (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-500/20 border border-amber-500/40 rounded-lg text-amber-300 text-[11px] font-black font-mono-numbers shadow-sm animate-pulse">
+                <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                <span>{hudState.comboCount}X {t.combo.toUpperCase()}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Active Powerups */}
+          {(hudState.hasShield || is2x || isSlow) && (
+            <div className="flex flex-col gap-1.5 pt-1">
+              {hudState.hasShield && (
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-blue-300 bg-blue-950/70 px-2 py-1 rounded-lg border border-blue-500/40">
+                  <Shield className="w-3.5 h-3.5 text-blue-400" /> {t.powerupShield}
+                </div>
+              )}
+              {is2x && (
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-purple-300 bg-purple-950/70 px-2 py-1 rounded-lg border border-purple-500/40">
+                  <Zap className="w-3.5 h-3.5 text-purple-400" /> {t.powerupBonus2x}
+                </div>
+              )}
+              {isSlow && (
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-cyan-300 bg-cyan-950/70 px-2 py-1 rounded-lg border border-cyan-500/40">
+                  <Clock className="w-3.5 h-3.5 text-cyan-400" /> {t.powerupSlow}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Center Canvas Viewport */}
+        <div
+          ref={containerRef}
+          className="flex-1 h-full flex items-center justify-center p-1 sm:p-2 overflow-hidden min-h-0 mx-2"
+        >
+          <canvas
+            ref={canvasRef}
+            className="rounded-2xl border border-slate-800 shadow-2xl bg-[#080d1a] cursor-pointer touch-none"
+          />
+        </div>
+
+        {/* Right Column Controls (if Dpad is on) */}
+        {showDpad ? (
+          <div className={`h-full flex items-center justify-center ${isTablet ? 'pr-4 pl-2' : 'pr-2 pl-1'} shrink-0`}>
+            <VirtualDpad onDirection={handleDirection} />
+          </div>
+        ) : (
+          <div className="w-20 flex items-center justify-center text-[11px] text-slate-500 font-mono-numbers text-center shrink-0">
+            {lang === 'tr' ? 'Kaydırarak dön' : 'Swipe to turn'}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // RENDER: Portrait Mode (Mobile Portrait & Tablet Portrait)
   return (
     <div className="relative w-full h-[100dvh] flex flex-col justify-between bg-[#060913] overflow-hidden select-none pt-[max(0.5rem,env(safe-area-inset-top,0px))] pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]">
       {/* Top HUD */}
-      <GameplayHud state={hudState} onPause={() => onPause(gameStateRef.current)} />
+      <GameplayHud state={hudState} onPause={() => onPause(gameStateRef.current)} language={lang} />
 
       {/* Primary Game Board Viewport Container */}
       <div
         ref={containerRef}
-        className="flex-1 w-full max-w-xl mx-auto flex items-center justify-center p-1.5 touch-none overflow-hidden min-h-0"
+        className={`flex-1 w-full ${isTablet ? 'max-w-2xl' : 'max-w-xl'} mx-auto flex items-center justify-center p-2 touch-none overflow-hidden min-h-0`}
       >
         <canvas
           ref={canvasRef}
@@ -228,12 +374,14 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       {/* Bottom Controls / Virtual D-Pad (only when enabled) */}
       <div className="w-full pb-1.5 px-3 flex flex-col items-center shrink-0">
         {showDpad && (
-          <div className="sm:hidden mb-1">
+          <div className="mb-1">
             <VirtualDpad onDirection={handleDirection} />
           </div>
         )}
         <div className="text-[10px] sm:text-[11px] text-slate-500 font-mono-numbers text-center tracking-tight">
-          WASD / Arrows / Swipe to Turn · Space to Pause
+          {lang === 'tr'
+            ? 'WASD / Yön Tuşları / Kaydırarak Dön · Boşluk: Duraklat'
+            : 'WASD / Arrows / Swipe to Turn · Space to Pause'}
         </div>
       </div>
     </div>

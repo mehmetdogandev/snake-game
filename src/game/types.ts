@@ -129,6 +129,8 @@ export interface PlayerStats {
   challengesCompleted: number;
 }
 
+export type Language = 'tr' | 'en';
+
 export interface PlayerSettings {
   soundFx: boolean;
   music: boolean;
@@ -136,6 +138,7 @@ export interface PlayerSettings {
   reducedMotion: boolean;
   highContrast: boolean;
   controls: 'swipe' | 'dpad' | 'both';
+  language: Language;
 }
 
 export interface SaveData {

@@ -261,6 +261,7 @@ export default function App() {
       {currentScreen === 'PAUSED' && (
         <PauseModal
           state={activeRunSnapshot || lastFinishedState || ({} as GameState)}
+          language={saveData.settings.language}
           onResume={() => setCurrentScreen('PLAYING')}
           onRestart={() => {
             setRunSessionId((id) => id + 1);
