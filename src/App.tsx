@@ -69,6 +69,37 @@ export default function App() {
     audio.setHapticsEnabled(saveData.settings.haptics);
   }, [saveData.settings]);
 
+  // Theme management: Light, Dark, System
+  const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => setSystemPrefersDark(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const appearanceSetting = saveData.settings.appearance || 'dark';
+  const resolvedTheme: 'light' | 'dark' =
+    appearanceSetting === 'system'
+      ? (systemPrefersDark ? 'dark' : 'light')
+      : appearanceSetting;
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', resolvedTheme);
+    if (resolvedTheme === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
+  }, [resolvedTheme]);
+
   // Quick sound toggle from header
   const handleToggleSound = useCallback(() => {
     const currentlyActive = saveData.settings.soundFx || saveData.settings.music;
@@ -219,7 +250,7 @@ export default function App() {
   );
 
   return (
-    <div className="relative w-full h-[100dvh] bg-[#060913] text-slate-100 flex flex-col items-center justify-center overflow-hidden pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]">
+    <div className="relative w-full h-[100dvh] bg-[var(--color-bg-base)] text-[var(--color-text-primary)] flex flex-col items-center justify-center overflow-hidden pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)] transition-colors duration-200">
       {/* Background Ambient Glow Gradients */}
       <div className="absolute -top-32 -left-32 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -247,6 +278,7 @@ export default function App() {
           mode={selectedMode}
           challengeStage={activeChallengeStage}
           saveData={saveData}
+          theme={resolvedTheme}
           onGameOver={handleEndRun}
           onVictory={handleEndRun}
           onPause={(snapshot) => {

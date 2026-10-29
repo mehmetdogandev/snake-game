@@ -13,6 +13,7 @@ interface GameCanvasProps {
   mode: GameState['mode'];
   challengeStage?: ChallengeStage;
   saveData: SaveData;
+  theme?: 'light' | 'dark';
   onGameOver: (finalState: GameState) => void;
   onVictory: (finalState: GameState) => void;
   onPause: (snapshot?: GameState) => void;
@@ -23,6 +24,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   mode,
   challengeStage,
   saveData,
+  theme = 'dark',
   onGameOver,
   onVictory,
   onPause,
@@ -210,7 +212,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           canvas.clientWidth,
           canvas.clientHeight,
           saveData.selectedSkin,
-          saveData.settings.reducedMotion
+          saveData.settings.reducedMotion,
+          theme
         );
       }
 
@@ -239,7 +242,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       unbindTouch();
       resizeObserver.disconnect();
     };
-  }, [handleDirection, handleTogglePause, onGameOver, onVictory, saveData.selectedSkin, saveData.settings.reducedMotion, dimensions]);
+  }, [handleDirection, handleTogglePause, onGameOver, onVictory, saveData.selectedSkin, saveData.settings.reducedMotion, theme, dimensions]);
 
   const showDpad = saveData.settings.controls === 'dpad' || saveData.settings.controls === 'both';
   const is2x = hudState.activePowerUps.some((p) => p.type === 'BONUS_2X');
@@ -262,12 +265,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         : t.modeChallenge;
 
     return (
-      <div className="relative w-full h-[100dvh] flex flex-row items-center justify-between bg-[#060913] overflow-hidden select-none px-[max(0.5rem,env(safe-area-inset-left,0px))] py-[max(0.25rem,env(safe-area-inset-top,0px))]">
+      <div className="relative w-full h-[100dvh] flex flex-row items-center justify-between bg-[var(--color-bg-base)] text-[var(--color-text-primary)] overflow-hidden select-none px-[max(0.5rem,env(safe-area-inset-left,0px))] py-[max(0.25rem,env(safe-area-inset-top,0px))]">
         {/* Left Column HUD */}
-        <div className={`h-full ${isTablet ? 'w-52 p-3' : 'w-40 py-1.5 px-2'} flex flex-col justify-between select-none shrink-0 border-r border-slate-800/80 bg-slate-950/70 rounded-2xl my-1 shadow-xl backdrop-blur-sm`}>
+        <div className={`h-full ${isTablet ? 'w-52 p-3' : 'w-40 py-1.5 px-2'} flex flex-col justify-between select-none shrink-0 border-r border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] rounded-2xl my-1 shadow-xl backdrop-blur-sm`}>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-extrabold uppercase text-[10px] sm:text-xs px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
+              <span className="font-extrabold uppercase text-[10px] sm:text-xs px-2 py-0.5 rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)]">
                 {modeBadge}
               </span>
               <button
@@ -336,7 +339,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         >
           <canvas
             ref={canvasRef}
-            className="rounded-2xl border border-slate-800 shadow-2xl bg-[#080d1a] cursor-pointer touch-none"
+            className="rounded-2xl border border-[var(--color-border-subtle)] shadow-2xl bg-[var(--arena-bg-1)] cursor-pointer touch-none"
           />
         </div>
 
@@ -346,7 +349,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             <VirtualDpad onDirection={handleDirection} />
           </div>
         ) : (
-          <div className="w-20 flex items-center justify-center text-[11px] text-slate-500 font-mono-numbers text-center shrink-0">
+          <div className="w-20 flex items-center justify-center text-[11px] text-[var(--color-text-muted)] font-mono-numbers text-center shrink-0">
             {lang === 'tr' ? 'Kaydırarak dön' : 'Swipe to turn'}
           </div>
         )}
@@ -356,7 +359,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
   // RENDER: Portrait Mode (Mobile Portrait & Tablet Portrait)
   return (
-    <div className="relative w-full h-[100dvh] flex flex-col justify-between bg-[#060913] overflow-hidden select-none pt-[max(0.5rem,env(safe-area-inset-top,0px))] pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]">
+    <div className="relative w-full h-[100dvh] flex flex-col justify-between bg-[var(--color-bg-base)] text-[var(--color-text-primary)] overflow-hidden select-none pt-[max(0.5rem,env(safe-area-inset-top,0px))] pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)] transition-colors duration-200">
       {/* Top HUD */}
       <GameplayHud state={hudState} onPause={() => onPause(gameStateRef.current)} language={lang} />
 
@@ -367,7 +370,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       >
         <canvas
           ref={canvasRef}
-          className="rounded-2xl border border-slate-800 shadow-2xl bg-[#080d1a] cursor-pointer touch-none"
+          className="rounded-2xl border border-[var(--color-border-subtle)] shadow-2xl bg-[var(--arena-bg-1)] cursor-pointer touch-none"
         />
       </div>
 

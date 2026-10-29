@@ -98,26 +98,26 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     CHALLENGE: t.modeChallenge,
   };
 
-  // Profile strip (Level, XP, Coins, Sound)
+  // Profile bar (Level, XP, Coins, Sound)
   const ProfileBar = (
-    <div className="flex items-center justify-between gap-3 p-2 sm:p-2.5 rounded-2xl bg-slate-900/80 backdrop-blur-md border border-slate-800/80 shadow-xl">
+    <div className="flex items-center justify-between gap-3 p-2 sm:p-2.5 rounded-2xl app-card shadow-lg backdrop-blur-md">
       {/* Level & XP Strip */}
       <div className="flex items-center gap-2.5 flex-1 min-w-0">
-        <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-emerald-400 via-emerald-600 to-teal-800 flex items-center justify-center font-black text-slate-950 text-xs sm:text-sm shadow-md border border-emerald-300/40 shrink-0">
+        <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-emerald-400 via-emerald-600 to-teal-800 flex items-center justify-center font-black text-white text-xs sm:text-sm shadow-md border border-emerald-300/40 shrink-0">
           {saveData.level}
           <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping pointer-events-none" />
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between text-[11px] mb-1 font-semibold">
-            <span className="text-slate-200 uppercase tracking-wider">
+            <span className="text-[var(--color-text-primary)] uppercase tracking-wider font-bold">
               {t.level} {saveData.level}
             </span>
-            <span className="font-mono-numbers text-emerald-400">
+            <span className="font-mono-numbers text-emerald-500 font-bold">
               {saveData.xp}/{xpNeeded} {t.xp}
             </span>
           </div>
-          <div className="w-full bg-slate-950/80 rounded-full h-1.5 overflow-hidden border border-slate-800/50">
+          <div className="w-full bg-[var(--color-bg-elevated)] rounded-full h-1.5 overflow-hidden border border-[var(--color-border-subtle)]">
             <div
               className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300 shadow-sm"
               style={{ width: `${xpPercent}%` }}
@@ -128,8 +128,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({
 
       {/* Currency & Audio Toggle */}
       <div className="flex items-center gap-2 shrink-0">
-        <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400 font-mono-numbers text-xs font-bold shadow-inner">
-          <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
+        <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-amber-500/15 border border-amber-500/35 rounded-xl text-amber-500 font-mono-numbers text-xs font-bold shadow-inner">
+          <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500" />
           <span>{saveData.coins.toLocaleString()}</span>
         </div>
 
@@ -139,13 +139,13 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             audio.playUiTap();
             onToggleSound();
           }}
-          className="p-1.5 sm:p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 active:scale-95 text-slate-300 border border-slate-700/60 transition-transform cursor-pointer shadow-sm"
+          className="p-1.5 sm:p-2 rounded-xl bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border-strong)] active:scale-95 text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] transition-all cursor-pointer shadow-sm"
           aria-label="Toggle Sound"
         >
           {saveData.settings.soundFx || saveData.settings.music ? (
-            <Volume2 className="w-4 h-4 text-emerald-400" />
+            <Volume2 className="w-4 h-4 text-emerald-500" />
           ) : (
-            <VolumeX className="w-4 h-4 text-slate-500" />
+            <VolumeX className="w-4 h-4 text-[var(--color-text-muted)]" />
           )}
         </button>
       </div>
@@ -155,26 +155,23 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   // Logo SVG lockup
   const LogoLockup = (
     <div className="relative flex flex-col items-center">
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold uppercase tracking-[0.25em] mb-1 shadow-sm">
-        <Sparkles className="w-3 h-3 text-emerald-400" />
-        {lang === 'tr' ? 'YENİ NESİL ARCADE' : 'NEXT-GEN ARCADE'}
+      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] font-extrabold uppercase tracking-[0.2em] mb-1 shadow-sm">
+        <Sparkles className="w-3 h-3 text-emerald-500" />
+        {lang === 'tr' ? 'ARCADE SERÜVENİ' : 'ARCADE EVOLUTION'}
       </div>
 
       <div className="flex items-center justify-center">
         <svg
           viewBox="0 0 340 56"
-          className={`${isMobileLandscape ? 'w-56 h-auto' : 'w-64 sm:w-80 h-auto'} overflow-visible drop-shadow-[0_4px_16px_rgba(16,185,129,0.35)]`}
+          className={`${isMobileLandscape ? 'w-56 h-auto' : 'w-64 sm:w-80 h-auto'} overflow-visible drop-shadow-[0_2px_12px_rgba(16,185,129,0.3)]`}
         >
           <defs>
-            <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="40%" stopColor="#34d399" />
-              <stop offset="75%" stopColor="#10b981" />
-              <stop offset="100%" stopColor="#06b6d4" />
+            <linearGradient id="mainTitleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#10b981" />
+              <stop offset="45%" stopColor="#059669" />
+              <stop offset="80%" stopColor="#06b6d4" />
+              <stop offset="100%" stopColor="#0284c7" />
             </linearGradient>
-            <filter id="neonFilter">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#10b981" floodOpacity="0.6" />
-            </filter>
           </defs>
 
           <text
@@ -183,10 +180,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             textAnchor="middle"
             fontFamily="Outfit, sans-serif"
             fontWeight="900"
-            fontSize="42"
+            fontSize="40"
             letterSpacing="-1"
-            fill="url(#titleGrad)"
-            filter="url(#neonFilter)"
+            fill="url(#mainTitleGrad)"
           >
             SNAKE EVOLUTION
           </text>
@@ -198,13 +194,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   // Snake Hero Podium
   const SnakePodium = (
     <div className={`relative flex flex-col items-center ${isMobileLandscape ? 'my-1' : 'my-2'} w-full max-w-xs`}>
-      <div className="absolute -inset-2 rounded-3xl bg-gradient-to-b from-emerald-500/15 via-teal-500/10 to-transparent blur-xl pointer-events-none" />
-
-      <div className="relative w-full bg-gradient-to-b from-slate-900/90 to-slate-950/95 border border-slate-800/90 rounded-2xl p-2 sm:p-3 shadow-2xl flex items-center justify-center overflow-hidden">
+      <div className="relative w-full app-card rounded-3xl p-2 sm:p-3 shadow-xl flex items-center justify-center overflow-hidden border border-[var(--color-border-subtle)]">
         <div
           className="absolute inset-0 opacity-15 pointer-events-none"
           style={{
-            backgroundImage: 'radial-gradient(rgba(16, 185, 129, 0.4) 1px, transparent 1px)',
+            backgroundImage: 'radial-gradient(var(--arena-dot) 1px, transparent 1px)',
             backgroundSize: '16px 16px',
           }}
         />
@@ -222,15 +216,15 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           audio.playUiTap();
           onOpenSkins();
         }}
-        className="mt-2 inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 transition-all cursor-pointer shadow-md group"
+        className="mt-2 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full app-surface hover:bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all cursor-pointer shadow-sm group"
       >
         <div
-          className="w-2.5 h-2.5 rounded-full ring-2 ring-white/20 shadow-sm"
+          className="w-2.5 h-2.5 rounded-full ring-2 ring-white/30 shadow-sm"
           style={{ backgroundColor: currentSkin.primaryColor }}
         />
         <span className="text-[11px]">
           {t.skins}:{' '}
-          <strong className="text-white font-semibold group-hover:text-emerald-400 transition-colors">
+          <strong className="text-[var(--color-text-primary)] font-semibold group-hover:text-emerald-500 transition-colors">
             {localizedSkin.name}
           </strong>
         </span>
@@ -238,10 +232,10 @@ export const MainMenu: React.FC<MainMenuProps> = ({
     </div>
   );
 
-  // Mode Selector Tabs & Play Button
+  // Mode Selector Tabs & Big Play Button
   const GameModeSection = (
     <div className="w-full">
-      <div className="flex p-1 bg-slate-950/80 rounded-xl border border-slate-800/80 shadow-inner">
+      <div className="flex p-1 bg-[var(--color-bg-elevated)] rounded-2xl border border-[var(--color-border-subtle)] shadow-inner">
         {(['CLASSIC', 'ZEN', 'CHALLENGE'] as GameMode[]).map((mode) => (
           <button
             key={mode}
@@ -254,17 +248,17 @@ export const MainMenu: React.FC<MainMenuProps> = ({
                 onSelectMode(mode);
               }
             }}
-            className={`flex-1 py-1.5 sm:py-2 px-1 rounded-lg text-xs font-bold transition-all cursor-pointer truncate ${
+            className={`flex-1 py-2 px-1 rounded-xl text-xs font-bold transition-all cursor-pointer truncate ${
               selectedMode === mode
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md font-extrabold'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md font-black'
+                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
             }`}
           >
             {modeLabels[mode]}
           </button>
         ))}
       </div>
-      <p className="text-[11px] text-slate-400 mt-1.5 font-medium px-2 leading-tight text-center">
+      <p className="text-[11px] text-[var(--color-text-muted)] mt-1.5 font-medium px-2 leading-tight text-center">
         {modeDescriptions[selectedMode]}
       </p>
 
@@ -278,7 +272,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             onStartGame();
           }
         }}
-        className={`w-full ${isMobileLandscape ? 'mt-2 py-3 text-base' : 'mt-3.5 sm:mt-4 py-3.5 sm:py-4 text-lg sm:text-xl'} px-6 bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 active:scale-[0.98] text-slate-950 font-black rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 glow-emerald cursor-pointer border-t border-white/40`}
+        className={`w-full ${isMobileLandscape ? 'mt-2 py-3 text-base' : 'mt-3.5 sm:mt-4 py-3.5 sm:py-4 text-lg sm:text-xl'} px-6 bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 active:scale-[0.985] text-slate-950 font-black rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 glow-emerald cursor-pointer border-t border-white/40`}
       >
         <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
         {selectedMode === 'CHALLENGE' ? t.startChallenge : t.play}
@@ -295,9 +289,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           audio.playUiTap();
           onOpenSkins();
         }}
-        className="flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-xl bg-slate-900/70 hover:bg-slate-800/80 active:scale-95 border border-slate-800/80 text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm group"
+        className="flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-2xl app-surface hover:bg-[var(--color-bg-elevated)] active:scale-95 border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all cursor-pointer shadow-sm group"
       >
-        <Palette className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+        <Palette className="w-4 h-4 text-cyan-500 group-hover:scale-110 transition-transform" />
         <span className="text-[11px] font-bold truncate">{t.skins}</span>
       </button>
 
@@ -307,9 +301,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           audio.playUiTap();
           onOpenMissions();
         }}
-        className="flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-xl bg-slate-900/70 hover:bg-slate-800/80 active:scale-95 border border-slate-800/80 text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm group"
+        className="flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-2xl app-surface hover:bg-[var(--color-bg-elevated)] active:scale-95 border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all cursor-pointer shadow-sm group"
       >
-        <Target className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+        <Target className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
         <span className="text-[11px] font-bold truncate">{t.missions}</span>
       </button>
 
@@ -319,9 +313,9 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           audio.playUiTap();
           onOpenChallenges();
         }}
-        className="flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-xl bg-slate-900/70 hover:bg-slate-800/80 active:scale-95 border border-slate-800/80 text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm group"
+        className="flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-2xl app-surface hover:bg-[var(--color-bg-elevated)] active:scale-95 border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all cursor-pointer shadow-sm group"
       >
-        <Swords className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+        <Swords className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
         <span className="text-[11px] font-bold truncate">{t.challenges}</span>
       </button>
 
@@ -331,16 +325,16 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           audio.playUiTap();
           onOpenStats();
         }}
-        className="flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-xl bg-slate-900/70 hover:bg-slate-800/80 active:scale-95 border border-slate-800/80 text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm group"
+        className="flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-2xl app-surface hover:bg-[var(--color-bg-elevated)] active:scale-95 border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all cursor-pointer shadow-sm group"
       >
-        <BarChart3 className="w-4 h-4 text-purple-400 group-hover:scale-110 transition-transform" />
+        <BarChart3 className="w-4 h-4 text-purple-500 group-hover:scale-110 transition-transform" />
         <span className="text-[11px] font-bold truncate">{t.stats}</span>
       </button>
     </div>
   );
 
   const FooterHints = (
-    <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
+    <div className="flex items-center justify-between text-[11px] text-[var(--color-text-muted)] px-1 pt-1">
       <div className="truncate">
         {lang === 'tr'
           ? 'WASD / Yön Tuşları · Kaydırarak Dön · Boşluk: Duraklat'
@@ -353,7 +347,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           audio.playUiTap();
           onOpenSettings();
         }}
-        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors flex items-center gap-1 cursor-pointer"
+        className="p-1.5 rounded-xl text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors flex items-center gap-1 cursor-pointer"
         aria-label={t.settings}
       >
         <Settings className="w-4 h-4" />

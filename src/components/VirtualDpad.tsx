@@ -25,7 +25,7 @@ export const VirtualDpad: React.FC<VirtualDpadProps> = ({ onDirection }) => {
           e.preventDefault();
           handlePress('UP');
         }}
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-11 h-11 sm:w-12 sm:h-12 bg-slate-800/90 active:bg-emerald-500 border border-slate-700/80 active:border-emerald-400 rounded-xl flex items-center justify-center text-slate-200 active:text-slate-950 shadow-lg active:scale-95 transition-all cursor-pointer"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-11 h-11 sm:w-12 sm:h-12 app-surface active:bg-emerald-500 border border-[var(--color-border-strong)] active:border-emerald-400 rounded-2xl flex items-center justify-center text-[var(--color-text-primary)] active:text-slate-950 shadow-md active:scale-95 transition-all cursor-pointer"
         aria-label="Move Up"
       >
         <ArrowUp className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -38,7 +38,7 @@ export const VirtualDpad: React.FC<VirtualDpadProps> = ({ onDirection }) => {
           e.preventDefault();
           handlePress('DOWN');
         }}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-11 h-11 sm:w-12 sm:h-12 bg-slate-800/90 active:bg-emerald-500 border border-slate-700/80 active:border-emerald-400 rounded-xl flex items-center justify-center text-slate-200 active:text-slate-950 shadow-lg active:scale-95 transition-all cursor-pointer"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-11 h-11 sm:w-12 sm:h-12 app-surface active:bg-emerald-500 border border-[var(--color-border-strong)] active:border-emerald-400 rounded-2xl flex items-center justify-center text-[var(--color-text-primary)] active:text-slate-950 shadow-md active:scale-95 transition-all cursor-pointer"
         aria-label="Move Down"
       >
         <ArrowDown className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -51,7 +51,7 @@ export const VirtualDpad: React.FC<VirtualDpadProps> = ({ onDirection }) => {
           e.preventDefault();
           handlePress('LEFT');
         }}
-        className="absolute left-0 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 bg-slate-800/90 active:bg-emerald-500 border border-slate-700/80 active:border-emerald-400 rounded-xl flex items-center justify-center text-slate-200 active:text-slate-950 shadow-lg active:scale-95 transition-all cursor-pointer"
+        className="absolute left-0 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 app-surface active:bg-emerald-500 border border-[var(--color-border-strong)] active:border-emerald-400 rounded-2xl flex items-center justify-center text-[var(--color-text-primary)] active:text-slate-950 shadow-md active:scale-95 transition-all cursor-pointer"
         aria-label="Move Left"
       >
         <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -64,14 +64,14 @@ export const VirtualDpad: React.FC<VirtualDpadProps> = ({ onDirection }) => {
           e.preventDefault();
           handlePress('RIGHT');
         }}
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 bg-slate-800/90 active:bg-emerald-500 border border-slate-700/80 active:border-emerald-400 rounded-xl flex items-center justify-center text-slate-200 active:text-slate-950 shadow-lg active:scale-95 transition-all cursor-pointer"
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 app-surface active:bg-emerald-500 border border-[var(--color-border-strong)] active:border-emerald-400 rounded-2xl flex items-center justify-center text-[var(--color-text-primary)] active:text-slate-950 shadow-md active:scale-95 transition-all cursor-pointer"
         aria-label="Move Right"
       >
         <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
       {/* Center tactile dot */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-slate-800/70 border border-slate-700/50 pointer-events-none" />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] pointer-events-none" />
     </div>
   );
 };

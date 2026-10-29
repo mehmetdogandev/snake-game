@@ -116,7 +116,8 @@ export class GameRenderer {
     canvasWidth: number,
     canvasHeight: number,
     skinId: string,
-    reducedMotion = false
+    reducedMotion = false,
+    theme: 'light' | 'dark' = 'dark'
   ) {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -142,6 +143,8 @@ export class GameRenderer {
       this.animTime += 0.025;
     }
 
+    const isLight = theme === 'light';
+
     // 1. Draw Arena Radial Vignette Background
     ctx.save();
     const bgGrad = ctx.createRadialGradient(
@@ -152,15 +155,22 @@ export class GameRenderer {
       offsetY + boardHeight / 2,
       boardWidth * 0.72
     );
-    bgGrad.addColorStop(0, '#0a1020');
-    bgGrad.addColorStop(0.65, '#070b16');
-    bgGrad.addColorStop(1, '#04070e');
+
+    if (isLight) {
+      bgGrad.addColorStop(0, '#f8fafc');
+      bgGrad.addColorStop(0.65, '#eef2f6');
+      bgGrad.addColorStop(1, '#e2e8f0');
+    } else {
+      bgGrad.addColorStop(0, '#0a1020');
+      bgGrad.addColorStop(0.65, '#070b16');
+      bgGrad.addColorStop(1, '#04070e');
+    }
 
     ctx.fillStyle = bgGrad;
     ctx.fillRect(offsetX, offsetY, boardWidth, boardHeight);
 
     // 2. Draw Subtle Holographic Grid
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.032)';
+    ctx.strokeStyle = isLight ? 'rgba(15, 23, 42, 0.06)' : 'rgba(255, 255, 255, 0.032)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let x = 0; x <= state.gridWidth; x++) {
@@ -176,7 +186,7 @@ export class GameRenderer {
     ctx.stroke();
 
     // Subtle intersection dots
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+    ctx.fillStyle = isLight ? 'rgba(5, 150, 105, 0.3)' : 'rgba(16, 185, 129, 0.15)';
     for (let x = 2; x < state.gridWidth; x += 3) {
       for (let y = 2; y < state.gridHeight; y += 3) {
         ctx.fillRect(offsetX + x * cellSize - 1, offsetY + y * cellSize - 1, 2, 2);
@@ -185,12 +195,12 @@ export class GameRenderer {
 
     // 3. Draw Ambient Floating Motes
     if (!reducedMotion) {
-      this.drawMotes(ctx, offsetX, offsetY, boardWidth, boardHeight);
+      this.drawMotes(ctx, offsetX, offsetY, boardWidth, boardHeight, isLight);
     }
 
     // 4. Draw Obstacles
     for (const obs of state.obstacles) {
-      this.drawObstacle(obs.x, obs.y, offsetX, offsetY, cellSize);
+      this.drawObstacle(obs.x, obs.y, offsetX, offsetY, cellSize, isLight);
     }
 
     // 5. Draw Foods
@@ -204,8 +214,8 @@ export class GameRenderer {
     // 7. Update and Draw Particles
     this.drawParticles(ctx);
 
-    // 8. Draw High-Tech Arena Perimeter Walls with Corner Brackets
-    this.drawPerimeter(ctx, offsetX, offsetY, boardWidth, boardHeight, state.mode);
+    // 8. Draw Arena Perimeter Walls with Corner Brackets
+    this.drawPerimeter(ctx, offsetX, offsetY, boardWidth, boardHeight, state.mode, isLight);
 
     ctx.restore();
   }
@@ -215,7 +225,8 @@ export class GameRenderer {
     offsetX: number,
     offsetY: number,
     bw: number,
-    bh: number
+    bh: number,
+    isLight = false
   ) {
     ctx.save();
     for (const mote of this.ambientMotes) {
@@ -230,7 +241,10 @@ export class GameRenderer {
       if (mote.y > bh) mote.y = 0;
 
       const currentAlpha = mote.baseAlpha * (0.6 + Math.sin(mote.phase) * 0.4);
-      ctx.fillStyle = `rgba(16, 185, 129, ${currentAlpha.toFixed(2)})`;
+      const color = isLight
+        ? `rgba(5, 150, 105, ${(currentAlpha * 0.85).toFixed(2)})`
+        : `rgba(16, 185, 129, ${currentAlpha.toFixed(2)})`;
+      ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(offsetX + mote.x, offsetY + mote.y, mote.size, 0, Math.PI * 2);
       ctx.fill();
@@ -238,19 +252,26 @@ export class GameRenderer {
     ctx.restore();
   }
 
-  private drawObstacle(oxCell: number, oyCell: number, offsetX: number, offsetY: number, cellSize: number) {
+  private drawObstacle(
+    oxCell: number,
+    oyCell: number,
+    offsetX: number,
+    offsetY: number,
+    cellSize: number,
+    isLight = false
+  ) {
     const ctx = this.ctx;
     const ox = offsetX + oxCell * cellSize;
     const oy = offsetY + oyCell * cellSize;
     const cornerRadius = cellSize * 0.22;
 
     ctx.save();
-    // Dark core
-    ctx.fillStyle = '#161f30';
-    ctx.strokeStyle = '#ef4444';
+    // Core surface
+    ctx.fillStyle = isLight ? '#334155' : '#161f30';
+    ctx.strokeStyle = isLight ? '#dc2626' : '#ef4444';
     ctx.lineWidth = 1.8;
 
-    ctx.shadowColor = 'rgba(239, 68, 68, 0.35)';
+    ctx.shadowColor = isLight ? 'rgba(220, 38, 38, 0.25)' : 'rgba(239, 68, 68, 0.35)';
     ctx.shadowBlur = 8;
 
     ctx.beginPath();
@@ -262,7 +283,7 @@ export class GameRenderer {
 
     // Diagonal hazard stripes
     ctx.clip();
-    ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+    ctx.strokeStyle = isLight ? 'rgba(239, 68, 68, 0.45)' : 'rgba(239, 68, 68, 0.3)';
     ctx.lineWidth = 2.5;
     for (let i = -cellSize; i < cellSize * 2; i += 7) {
       ctx.beginPath();
@@ -272,7 +293,7 @@ export class GameRenderer {
     }
 
     // Inner bevel highlight
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.strokeStyle = isLight ? 'rgba(255, 255, 255, 0.35)' : 'rgba(255, 255, 255, 0.15)';
     ctx.lineWidth = 1;
     ctx.strokeRect(ox + 3.5, oy + 3.5, cellSize - 7, cellSize - 7);
 
@@ -769,24 +790,31 @@ export class GameRenderer {
     oy: number,
     bw: number,
     bh: number,
-    mode: GameState['mode']
+    mode: GameState['mode'],
+    isLight = false
   ) {
     ctx.save();
     const isZen = mode === 'ZEN';
-    const wallColor = isZen ? 'rgba(56, 189, 248, 0.5)' : 'rgba(16, 185, 129, 0.65)';
-    const glowColor = isZen ? '#38bdf8' : '#10b981';
+    const wallColor = isLight
+      ? isZen
+        ? 'rgba(2, 132, 199, 0.85)'
+        : 'rgba(5, 150, 105, 0.85)'
+      : isZen
+      ? 'rgba(56, 189, 248, 0.5)'
+      : 'rgba(16, 185, 129, 0.65)';
+    const glowColor = isZen ? (isLight ? '#0284c7' : '#38bdf8') : (isLight ? '#059669' : '#10b981');
 
     ctx.strokeStyle = wallColor;
     ctx.lineWidth = 2.5;
     ctx.shadowColor = glowColor;
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = isLight ? 4 : 10;
     ctx.strokeRect(ox, oy, bw, bh);
 
     ctx.shadowBlur = 0;
 
     // Corner brackets
     const bracketLen = 14;
-    ctx.strokeStyle = '#ffffff';
+    ctx.strokeStyle = isLight ? '#0f172a' : '#ffffff';
     ctx.lineWidth = 3;
 
     // Top-Left

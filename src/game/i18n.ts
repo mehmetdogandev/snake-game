@@ -117,6 +117,11 @@ export interface Translations {
   reducedMotionDesc: string;
   highContrast: string;
   highContrastDesc: string;
+  sectionAppearance: string;
+  appearance: string;
+  appearanceLight: string;
+  appearanceDark: string;
+  appearanceSystem: string;
   sectionLanguage: string;
   languageSelect: string;
   sectionData: string;
@@ -250,6 +255,11 @@ const TR: Translations = {
   reducedMotionDesc: 'Hızlı titreşimler ve arka plan parçacık efektlerini yumuşatır',
   highContrast: 'Yüksek Karşıtlık',
   highContrastDesc: 'Yılanı, engelleri ve yemleri daha belirgin hale getirir',
+  sectionAppearance: 'Görünüm Teması',
+  appearance: 'Tema Seçimi',
+  appearanceLight: 'Açık',
+  appearanceDark: 'Koyu',
+  appearanceSystem: 'Sistem',
   sectionLanguage: 'Dil Seçeneği / Language',
   languageSelect: 'Uygulama Dili',
   sectionData: 'Veri Yönetimi',
@@ -383,6 +393,11 @@ const EN: Translations = {
   reducedMotionDesc: 'Softens screen shakes, intense flashes, and particles',
   highContrast: 'High Contrast Mode',
   highContrastDesc: 'Boosts outline visibility on snake, walls, and food items',
+  sectionAppearance: 'Theme & Appearance',
+  appearance: 'Color Theme',
+  appearanceLight: 'Light',
+  appearanceDark: 'Dark',
+  appearanceSystem: 'System',
   sectionLanguage: 'Language / Dil',
   languageSelect: 'App Language',
   sectionData: 'Data Management',

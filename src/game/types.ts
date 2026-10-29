@@ -130,6 +130,7 @@ export interface PlayerStats {
 }
 
 export type Language = 'tr' | 'en';
+export type AppearanceMode = 'light' | 'dark' | 'system';
 
 export interface PlayerSettings {
   soundFx: boolean;
@@ -139,6 +140,7 @@ export interface PlayerSettings {
   highContrast: boolean;
   controls: 'swipe' | 'dpad' | 'both';
   language: Language;
+  appearance: AppearanceMode;
 }
 
 export interface SaveData {

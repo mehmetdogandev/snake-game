@@ -42,6 +42,7 @@ export const DEFAULT_SAVE_DATA: SaveData = {
     highContrast: false,
     controls: 'both',
     language: 'tr',
+    appearance: 'dark',
   },
   lastSavedAt: Date.now(),
 };
@@ -94,6 +95,9 @@ export function loadSaveData(): SaveData {
         ...DEFAULT_SAVE_DATA.settings,
         ...(migrated.settings || {}),
         language: (migrated.settings?.language === 'en' ? 'en' : 'tr'),
+        appearance: (['light', 'dark', 'system'].includes(migrated.settings?.appearance as string)
+          ? migrated.settings!.appearance
+          : 'dark'),
       },
       achievements: {
         ...(migrated.achievements || {}),

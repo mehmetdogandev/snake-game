@@ -39,53 +39,53 @@ export const StatsModal: React.FC<StatsModalProps> = ({ saveData, onClose }) => 
       value: stats.highestScore.toLocaleString(),
       sub: `${t.modeClassic}: ${saveData.bestScores.classic} · ${t.modeZen}: ${saveData.bestScores.zen}`,
       icon: Trophy,
-      color: 'text-amber-400',
+      color: 'text-amber-500',
     },
     {
       label: t.statLongestSnake,
       value: lang === 'tr' ? `${stats.longestSnake} parça` : `${stats.longestSnake} segments`,
       sub: lang === 'tr' ? 'Ulaşılan rekor uzunluk' : 'Peak length recorded',
       icon: Flame,
-      color: 'text-emerald-400',
+      color: 'text-emerald-500',
     },
     {
       label: t.statTotalFood,
       value: stats.totalFoodCollected.toLocaleString(),
       sub: lang === 'tr' ? `${stats.goldenFoodCollected} altın elma` : `${stats.goldenFoodCollected} golden orbs`,
       icon: Sparkles,
-      color: 'text-cyan-400',
+      color: 'text-cyan-500',
     },
     {
       label: t.statTotalRuns,
       value: stats.totalRuns.toLocaleString(),
       sub: lang === 'tr' ? 'Tamamlanan oyun seansı' : 'Completed gaming sessions',
       icon: Target,
-      color: 'text-purple-400',
+      color: 'text-purple-500',
     },
     {
       label: t.statTotalPlayTime,
       value: playTimeFormatted,
       sub: lang === 'tr' ? 'Aktif oynanış süresi' : 'Time in active gameplay',
       icon: Clock,
-      color: 'text-blue-400',
+      color: 'text-blue-500',
     },
     {
       label: t.statTotalCoins,
       value: stats.totalCoinsEarned.toLocaleString(),
       sub: `${lang === 'tr' ? 'Mevcut bakiye' : 'Current balance'}: ${saveData.coins.toLocaleString()}`,
       icon: Coins,
-      color: 'text-amber-400',
+      color: 'text-amber-500',
     },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-slate-950/80 backdrop-blur-md">
-      <div className="relative w-full max-w-lg md:max-w-xl max-h-[92dvh] flex flex-col bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-5 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
+      <div className="relative w-full max-w-lg md:max-w-xl max-h-[92dvh] flex flex-col app-modal rounded-3xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-800/80 bg-slate-900/60">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-emerald-400" />
-            <h2 className="text-lg sm:text-xl font-bold font-display text-white tracking-tight">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)]">
+          <div className="flex items-center gap-2.5">
+            <BarChart3 className="w-5 h-5 text-emerald-500" />
+            <h2 className="text-lg sm:text-xl font-black font-display text-[var(--color-text-primary)] tracking-tight">
               {t.statsTitle}
             </h2>
           </div>
@@ -95,7 +95,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({ saveData, onClose }) => 
               audio.playUiTap();
               onClose();
             }}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-xl text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors cursor-pointer"
             aria-label={t.close}
           >
             <X className="w-5 h-5" />
@@ -103,21 +103,21 @@ export const StatsModal: React.FC<StatsModalProps> = ({ saveData, onClose }) => 
         </div>
 
         {/* Content */}
-        <div className="p-3.5 sm:p-5 space-y-3 sm:space-y-4 max-h-[85dvh] overflow-y-auto">
+        <div className="p-4 sm:p-6 space-y-4 max-h-[85dvh] overflow-y-auto">
           {/* Progress Header Strip */}
-          <div className="grid grid-cols-2 gap-3 p-3 bg-slate-950/60 rounded-xl border border-slate-800/60">
+          <div className="grid grid-cols-2 gap-3 p-3.5 bg-[var(--color-bg-elevated)] rounded-2xl border border-[var(--color-border-subtle)]">
             <div>
-              <p className="text-xs text-slate-400 font-medium">
+              <p className="text-xs text-[var(--color-text-secondary)] font-medium">
                 {lang === 'tr' ? 'Açılan Kostümler' : 'Skins Unlocked'}
               </p>
-              <p className="text-lg font-bold text-white font-mono-numbers">
-                {saveData.unlockedSkins.length} <span className="text-xs text-slate-500">/ 10</span>
+              <p className="text-xl font-black text-[var(--color-text-primary)] font-mono-numbers mt-0.5">
+                {saveData.unlockedSkins.length} <span className="text-xs text-[var(--color-text-muted)]">/ 12</span>
               </p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 font-medium">{t.missionsTabAchievements}</p>
-              <p className="text-lg font-bold text-emerald-400 font-mono-numbers">
-                {achievementPct}% <span className="text-xs text-slate-500">({unlockedCount}/{totalAchievements})</span>
+              <p className="text-xs text-[var(--color-text-secondary)] font-medium">{t.missionsTabAchievements}</p>
+              <p className="text-xl font-black text-emerald-500 font-mono-numbers mt-0.5">
+                {achievementPct}% <span className="text-xs text-[var(--color-text-muted)]">({unlockedCount}/{totalAchievements})</span>
               </p>
             </div>
           </div>
@@ -129,16 +129,16 @@ export const StatsModal: React.FC<StatsModalProps> = ({ saveData, onClose }) => 
               return (
                 <div
                   key={idx}
-                  className="p-3.5 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-800/40 transition-colors"
+                  className="p-3.5 rounded-2xl border border-[var(--color-border-subtle)] app-surface hover:bg-[var(--color-bg-elevated)] transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
                     <Icon className={`w-4 h-4 ${item.color}`} />
-                    <span className="text-xs font-semibold text-slate-400">{item.label}</span>
+                    <span className="text-xs font-semibold text-[var(--color-text-secondary)]">{item.label}</span>
                   </div>
-                  <div className="text-base font-bold text-white font-mono-numbers tracking-tight">
+                  <div className="text-base font-bold text-[var(--color-text-primary)] font-mono-numbers tracking-tight">
                     {item.value}
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5 truncate">{item.sub}</div>
+                  <div className="text-[11px] text-[var(--color-text-muted)] mt-0.5 truncate">{item.sub}</div>
                 </div>
               );
             })}
